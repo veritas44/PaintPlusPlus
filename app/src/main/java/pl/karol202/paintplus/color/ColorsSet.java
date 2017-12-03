@@ -20,6 +20,9 @@ import android.graphics.Color;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ColorsSet implements Parcelable
 {
 	public interface OnColorsChangeListener
@@ -29,12 +32,13 @@ public class ColorsSet implements Parcelable
 	
 	private int firstColor;
 	private int secondColor;
-	private OnColorsChangeListener listener;
+	private List<OnColorsChangeListener> listeners;
 
 	public ColorsSet(int firstColor, int secondColor)
 	{
 		this.firstColor = firstColor;
 		this.secondColor = secondColor;
+		this.listeners = new ArrayList<>();
 	}
 
 	void revert()
@@ -42,7 +46,7 @@ public class ColorsSet implements Parcelable
 		int first = firstColor;
 		firstColor = secondColor;
 		secondColor = first;
-		listener.onColorsChanged();
+		for(OnColorsChangeListener listener : listeners) listener.onColorsChanged();
 	}
 
 	public int getFirstColor()
@@ -53,7 +57,7 @@ public class ColorsSet implements Parcelable
 	public void setFirstColor(int firstColor)
 	{
 		this.firstColor = firstColor;
-		listener.onColorsChanged();
+		for(OnColorsChangeListener listener : listeners) listener.onColorsChanged();
 	}
 
 	public int getSecondColor()
@@ -64,12 +68,12 @@ public class ColorsSet implements Parcelable
 	void setSecondColor(int secondColor)
 	{
 		this.secondColor = secondColor;
-		listener.onColorsChanged();
+		for(OnColorsChangeListener listener : listeners) listener.onColorsChanged();
 	}
 	
-	public void setListener(OnColorsChangeListener listener)
+	public void addListener(OnColorsChangeListener listener)
 	{
-		this.listener = listener;
+		listeners.add(listener);
 	}
 	
 	public static final Parcelable.Creator<ColorsSet> CREATOR = new Parcelable.Creator<ColorsSet>()

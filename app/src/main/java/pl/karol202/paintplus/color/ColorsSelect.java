@@ -75,7 +75,7 @@ public class ColorsSelect extends Fragment implements View.OnClickListener, Colo
 		View view = inflater.inflate(R.layout.colors, container, false);
 		image = activityPaint.getImage();
 		colors = image.getColorsSet();
-		colors.setListener(this);
+		colors.addListener(this);
 		
 		colorFirst = view.findViewById(R.id.view_color_first);
 		colorFirst.setOnClickListener(this);

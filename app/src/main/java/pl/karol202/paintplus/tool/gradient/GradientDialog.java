@@ -41,7 +41,7 @@ class GradientDialog
 		void onGradientUpdated();
 	}
 	
-	private static final int REQUEST_CODE = 10;
+	private static final int REQUEST_CODE = 6;
 	
 	private OnGradientUpdateListener listener;
 	private ActivityPaint activity;

@@ -37,6 +37,7 @@ import pl.karol202.paintplus.tool.OnToolChangeListener;
 import pl.karol202.paintplus.tool.Tool;
 import pl.karol202.paintplus.tool.ToolProperties;
 import pl.karol202.paintplus.tool.ToolsAdapter;
+import pl.karol202.paintplus.tool.ToolsAdapter.OnToolSelectListener;
 
 class ActivityPaintDrawers
 {
@@ -165,7 +166,8 @@ class ActivityPaintDrawers
 	{
 		drawerAdapter.syncState();
 		
-		toolsAdapter = new ToolsAdapter(activity, activity.getTools(), new ToolsAdapter.OnToolSelectListener()
+		toolsAdapter = new ToolsAdapter(activity, activity.getTools());
+		toolsAdapter.addOnToolSelectListener(new OnToolSelectListener()
 		{
 			@Override
 			public void onToolSelect(Tool tool)
@@ -176,7 +178,7 @@ class ActivityPaintDrawers
 		drawerLeft.setAdapter(toolsAdapter);
 		
 		tryToAttachPropertiesFragment();
-		tryToAttachColorsFragment();
+		attachColorsFragment();
 	}
 	
 	private void tryToAttachPropertiesFragment()
@@ -188,8 +190,8 @@ class ActivityPaintDrawers
 		catch(Exception e)
 		{
 			ErrorHandler.report(new RuntimeException("Error: Could not instantiate fragment from fragment class." +
-													  "Probably the fragment class does not contain " +
-													  "default constructor.", e));
+													 "Probably the fragment class does not contain " +
+													 "default constructor.", e));
 		}
 	}
 	
@@ -211,25 +213,23 @@ class ActivityPaintDrawers
 		return properties;
 	}
 	
-	private void tryToAttachColorsFragment()
-	{
-		try
-		{
-			attachColorsFragment();
-		}
-		catch(Exception e)
-		{
-			ErrorHandler.report(new RuntimeException("Error: Could not instantiate fragment from fragment class." +
-													  "Probably the fragment class does not contain " +
-													  "default constructor.", e));
-		}
-	}
-	
-	private void attachColorsFragment() throws InstantiationException, IllegalAccessException
+	private void attachColorsFragment()
 	{
 		FragmentTransaction colorTrans = fragments.beginTransaction();
 		colorTrans.replace(R.id.colors_fragment, colorsSelect);
 		colorTrans.commit();
+	}
+	
+	private void onToolSelect(Tool newTool)
+	{
+		Tool previousTool = activity.getTool();
+		
+		activity.setTool(newTool);
+		tryToAttachPropertiesFragment();
+		layoutDrawer.closeDrawer(drawerLeft);
+		
+		if(previousTool instanceof OnToolChangeListener) ((OnToolChangeListener) previousTool).onOtherToolSelected();
+		if(newTool instanceof OnToolChangeListener) ((OnToolChangeListener) newTool).onToolSelected();
 	}
 	
 	void togglePropertiesDrawer()
@@ -244,15 +244,8 @@ class ActivityPaintDrawers
 		return layoutDrawer.isDrawerOpen(drawerLeft) || layoutDrawer.isDrawerOpen(drawerRight);
 	}
 	
-	private void onToolSelect(Tool newTool)
+	void addOnToolSelectListener(OnToolSelectListener listener)
 	{
-		Tool previousTool = activity.getTool();
-		
-		activity.setTool(newTool);
-		tryToAttachPropertiesFragment();
-		layoutDrawer.closeDrawer(drawerLeft);
-		
-		if(previousTool instanceof OnToolChangeListener) ((OnToolChangeListener) previousTool).onOtherToolSelected();
-		if(newTool instanceof OnToolChangeListener) ((OnToolChangeListener) newTool).onToolSelected();
+		toolsAdapter.addOnToolSelectListener(listener);
 	}
 }

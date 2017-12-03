@@ -43,7 +43,7 @@ import static android.provider.MediaStore.EXTRA_OUTPUT;
 
 public class OptionFileCapturePhoto extends Option implements ActivityResultListener
 {
-	private static final int REQUEST_CAPTURE_PHOTO = 0;
+	private static final int REQUEST_CAPTURE_PHOTO = 5;
 	
 	private ActivityPaint activity;
 	private File photoFile;

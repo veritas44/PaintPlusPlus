@@ -25,6 +25,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import pl.karol202.paintplus.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ToolsAdapter extends RecyclerView.Adapter<ToolsAdapter.ViewHolder>
 {
 	public interface OnToolSelectListener
@@ -57,19 +60,19 @@ public class ToolsAdapter extends RecyclerView.Adapter<ToolsAdapter.ViewHolder>
 		@Override
 		public void onClick(View view)
 		{
-			listener.onToolSelect(tool);
+			for(OnToolSelectListener listener : listeners) listener.onToolSelect(tool);
 		}
 	}
 	
 	private Context context;
 	private Tools tools;
-	private OnToolSelectListener listener;
+	private List<OnToolSelectListener> listeners;
 	
-	public ToolsAdapter(Context context, Tools tools, OnToolSelectListener listener)
+	public ToolsAdapter(Context context, Tools tools)
 	{
 		this.context = context;
 		this.tools = tools;
-		this.listener = listener;
+		this.listeners = new ArrayList<>();
 	}
 	
 	@Override
@@ -89,5 +92,10 @@ public class ToolsAdapter extends RecyclerView.Adapter<ToolsAdapter.ViewHolder>
 	public int getItemCount()
 	{
 		return tools.getToolsAmount();
+	}
+	
+	public void addOnToolSelectListener(OnToolSelectListener listener)
+	{
+		listeners.add(listener);
 	}
 }
